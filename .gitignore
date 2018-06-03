@@ -1,0 +1,6 @@
+*
+!.gitignore
+!.vscode/tasks.json
+!src/*
+!test/*.cpp
+!test/*.cfg
