@@ -2,7 +2,7 @@
 #include <vector>
 
 // define __INIPARSER_DEBUG__ to enable debug mode
-#define __INIPARSER_DEBUG__
+// #define __INIPARSER_DEBUG__
 
 #include "../src/iniparser.hpp"
 
