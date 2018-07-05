@@ -6,43 +6,38 @@
 #include <string>
 #include <map>
 
-template <class __data_type>
-class iniFile : public std::map<std::string, std::map<std::string, __data_type>>
+template <class value_type>
+class iniFile : public std::map<std::string, std::map<std::string, value_type>>
 {
 
   public:
     // Constructor
     iniFile() {}
-    iniFile(std::string filename) { this->read(filename); }
+    iniFile(std::string file_name) { this->read(file_name); }
 
     // Basic functions
-    __data_type test(__data_type);
-    void read(std::string);
-    void write(std::string);
-    void setBuffSize(const unsigned int &_Count) { this->buff_size = _Count; }
+    void read(std::string file_name);
+    void write(std::string file_name);
 
     // Operator
-    friend std::ostream &operator<<(std::ostream &os, const iniFile<__data_type> &ini)
+    friend std::ostream &operator<<(std::ostream &os, const iniFile<value_type> &ini)
     {
         for (const auto &parent : ini)
         {
             os << '[' << parent.first << ']' << std::endl;
-            for (const auto &[name, val] : parent.second)
+            for (const auto &[key, val] : parent.second)
             {
-                os << name << '=' << val << std::endl;
+                os << key << '=' << val << std::endl;
             }
         }
         return os;
     }
-
-  private:
-    ssize_t buff_size = 256;
 };
 
-template <class __data_type>
-void iniFile<__data_type>::read(std::string filename)
+template <class value_type>
+void iniFile<value_type>::read(std::string file_name)
 {
-    std::ifstream fInput(filename);
+    std::ifstream fInput(file_name);
     std::string parent;
     for (std::string line; std::getline(fInput, line);)
     {
@@ -54,9 +49,6 @@ void iniFile<__data_type>::read(std::string filename)
                 line.pop_back();
                 line.erase(line.begin());
                 parent = line;
-#ifdef __INIPARSER_DEBUG__
-                std::cout << "[" << line << "]" << std::endl;
-#endif
             }
         case '#':
         case ';':
@@ -68,20 +60,17 @@ void iniFile<__data_type>::read(std::string filename)
                 std::string name, val;
                 std::getline(iss, name, '=');
                 std::getline(iss, val);
-                (*this)[parent][name] = val;
-#ifdef __INIPARSER_DEBUG__
-                std::cout << name << ':' << val << std::endl;
-#endif
+                this->operator[](parent)[name] = val;
             }
         }
     }
     fInput.close();
 }
 
-template <class __data_type>
-void iniFile<__data_type>::write(std::string filename)
+template <class value_type>
+void iniFile<value_type>::write(std::string file_name)
 {
-    std::ofstream fOutput(filename);
+    std::ofstream fOutput(file_name);
     fOutput << (*this);
     fOutput.close();
 }
