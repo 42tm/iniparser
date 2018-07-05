@@ -13,7 +13,6 @@
                 "-O3",
                 "-o",
                 "test01",
-                "src\\iniparser.cpp",
                 "test\\01.cpp",
             ],
             "problemMatcher": {

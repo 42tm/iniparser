@@ -51,7 +51,7 @@ void iniFile<__data_type>::read(std::string filename)
             }
         case '#':
         case ';':
-            continue;
+            break;
         default:
             if (line.find('=', 1))
             {
