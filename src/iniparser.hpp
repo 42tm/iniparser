@@ -7,7 +7,7 @@
 #include <map>
 
 template <class __data_type>
-class iniFile
+class iniFile : public std::map<std::string, std::map<std::string, __data_type>>
 {
 
   public:
@@ -16,9 +16,9 @@ class iniFile
     iniFile(std::string filename) { this->read(filename); }
 
     // Built-in functions
-    bool empty() const { return this->database.empty(); }
-    size_t size() const { return this->database.size(); }
-    void clear() { this->database.clear(); }
+    bool empty() const { return this->empty(); }
+    size_t size() const { return this->size(); }
+    void clear() { this->clear(); }
 
     // Basic functions
     __data_type test(__data_type);
@@ -27,7 +27,6 @@ class iniFile
     void setBuffSize(const unsigned int &_Count) { this->buff_size = _Count; }
 
   private:
-    std::map<std::string, std::map<std::string, __data_type>> database;
     ssize_t buff_size = 256;
 };
 
@@ -60,7 +59,7 @@ void iniFile<__data_type>::read(std::string filename)
                 std::string name, val;
                 std::getline(iss, name, '=');
                 std::getline(iss, val);
-                this->database[parent][name] = val;
+                (*this)[parent][name] = val;
 #ifdef __INIPARSER_DEBUG__
                 std::cout << name << ':' << val << std::endl;
 #endif
@@ -74,7 +73,7 @@ template <class __data_type>
 void iniFile<__data_type>::write(std::string filename)
 {
     std::ofstream fOutput(filename);
-    for (const std::pair<const std::string, std::map<std::string, __data_type>> &parent : database)
+    for (const auto &parent : *this)
     {
         fOutput << '[' << parent.first << ']' << std::endl;
         for (const auto &[name, val] : parent.second)
