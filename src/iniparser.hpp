@@ -15,11 +15,6 @@ class iniFile : public std::map<std::string, std::map<std::string, __data_type>>
     iniFile() {}
     iniFile(std::string filename) { this->read(filename); }
 
-    // Built-in functions
-    bool empty() const { return this->empty(); }
-    size_t size() const { return this->size(); }
-    void clear() { this->clear(); }
-
     // Basic functions
     __data_type test(__data_type);
     void read(std::string);
