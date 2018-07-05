@@ -32,38 +32,42 @@ class iniFile : public std::map<std::string, std::map<std::string, value_type>>
         }
         return os;
     }
+    friend std::istream &operator>>(std::istream &is, iniFile<value_type> &ini)
+    {
+        for (std::string line, parent; std::getline(is, line);)
+        {
+            switch (line.front())
+            {
+            case '[':
+                if (line.find_first_of(']') == line.size() - 1 && line.find_last_of('[') == 0)
+                {
+                    line.pop_back();
+                    line.erase(line.begin());
+                    parent = line;
+                }
+            case '#':
+            case ';':
+                break;
+            default:
+                if (line.find('=', 1))
+                {
+                    std::istringstream iss(line);
+                    std::string name, val;
+                    std::getline(iss, name, '=');
+                    std::getline(iss, val);
+                    ini[parent][name] = val;
+                }
+            }
+        }
+        return is;
+    }
 };
 
 template <class value_type>
 void iniFile<value_type>::read(std::string file_name)
 {
     std::ifstream fInput(file_name);
-    std::string parent;
-    for (std::string line; std::getline(fInput, line);)
-    {
-        switch (line.front())
-        {
-        case '[':
-            if (line.find_first_of(']') == line.size() - 1 && line.find_last_of('[') == 0)
-            {
-                line.pop_back();
-                line.erase(line.begin());
-                parent = line;
-            }
-        case '#':
-        case ';':
-            break;
-        default:
-            if (line.find('=', 1))
-            {
-                std::istringstream iss(line);
-                std::string name, val;
-                std::getline(iss, name, '=');
-                std::getline(iss, val);
-                this->operator[](parent)[name] = val;
-            }
-        }
-    }
+    fInput >> (*this);
     fInput.close();
 }
 
