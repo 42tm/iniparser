@@ -21,6 +21,20 @@ class iniFile : public std::map<std::string, std::map<std::string, __data_type>>
     void write(std::string);
     void setBuffSize(const unsigned int &_Count) { this->buff_size = _Count; }
 
+    // Operator
+    friend std::ostream &operator<<(std::ostream &os, const iniFile<__data_type> &ini)
+    {
+        for (const auto &parent : ini)
+        {
+            os << '[' << parent.first << ']' << std::endl;
+            for (const auto &[name, val] : parent.second)
+            {
+                os << name << '=' << val << std::endl;
+            }
+        }
+        return os;
+    }
+
   private:
     ssize_t buff_size = 256;
 };
@@ -68,13 +82,6 @@ template <class __data_type>
 void iniFile<__data_type>::write(std::string filename)
 {
     std::ofstream fOutput(filename);
-    for (const auto &parent : *this)
-    {
-        fOutput << '[' << parent.first << ']' << std::endl;
-        for (const auto &[name, val] : parent.second)
-        {
-            fOutput << name << '=' << val << std::endl;
-        }
-    }
+    fOutput << (*this);
     fOutput.close();
 }
